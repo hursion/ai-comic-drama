@@ -1,0 +1,15 @@
+# ComfyUI extra model paths for this project.
+# The bootstrap script rewrites base_path to $WORK/models/comfy.
+# If you move the project, edit base_path and restart ComfyUI.
+comic:
+  base_path: /mnt/workspace/ai-comic-drama/models/comfy
+  checkpoints: checkpoints
+  diffusion_models: diffusion_models
+  unet: unet
+  text_encoders: text_encoders
+  clip_vision: clip_vision
+  style_models: style_models
+  vae: vae
+  loras: loras
+  upscale_models: upscale_models
+  audio_encoders: audio_encoders

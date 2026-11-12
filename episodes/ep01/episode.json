@@ -1,0 +1,179 @@
+{
+  "title": "夜班电梯",
+  "slug": "ep01",
+  "style": "国漫赛璐璐，干净线稿，克制的冷色调，电影感构图，浅景深，9:16 竖屏，统一的光影方向",
+  "aspect_ratio": "9:16",
+  "fps": 30,
+  "characters": [
+    {
+      "id": "lin",
+      "name": "林晚",
+      "appearance": "25 岁女性，黑色齐肩短发，琥珀色眼睛，右眼下有一颗小痣，身形清瘦",
+      "outfit": "深蓝色保安制服，银色工牌，黑色短靴",
+      "sheet": "assets/characters/lin_sheet.png",
+      "voice_ref": "assets/voices/lin.wav",
+      "voice_text": "这是一段用于复刻音色的参考台词。",
+      "sft_speaker": "中文女"
+    }
+  ],
+  "locations": [
+    {
+      "id": "elevator",
+      "name": "老旧电梯",
+      "master": "assets/scenes/elevator_master.png",
+      "prompt": "1990 年代老式电梯内部，拉丝金属墙面，暖黄顶灯，机械楼层指示灯，空间狭窄，轻微恐怖氛围"
+    },
+    {
+      "id": "corridor",
+      "name": "十三楼走廊",
+      "master": "assets/scenes/corridor_master.png",
+      "prompt": "废弃办公楼走廊，13 楼，尽头一扇半开的防火门，应急灯偏绿，地面有薄灰，远处完全黑暗"
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "medium",
+      "camera": "static",
+      "action": "林晚走进电梯，转身面对镜头，门在身后合上",
+      "dialogue": [
+        {"character": "lin", "text": "又是最后一班。", "emotion": "疲惫"}
+      ],
+      "image_prompt": "林晚站在老旧电梯门口，刚迈进一步，右手扶着门框，回头看向镜头，冷色顶光，半身构图，背景是昏暗的一楼大厅",
+      "video_prompt": "林晚向前走一步后转身，发丝轻微摆动，电梯门在背景缓慢合上，镜头保持静止，人物面部稳定",
+      "negative_prompt": "多余手指，肢体畸形，脸部崩坏，文字水印，低清晰度，噪点，闪烁，镜头抖动",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s01_start.png",
+      "clip": "clips/s01.mp4",
+      "seed": 101
+    },
+    {
+      "id": "s02",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "close-up",
+      "camera": "slow push-in",
+      "action": "林晚按下 13 楼按钮，指尖停顿",
+      "dialogue": [],
+      "image_prompt": "特写：林晚的右手食指停在老式电梯按钮面板上，13 楼按钮发出微弱红光，金属面板有划痕，浅景深",
+      "video_prompt": "手指缓慢按下 13 楼按钮，按钮亮起，指尖停留一瞬，镜头极缓慢推近，保持手部结构稳定",
+      "negative_prompt": "六指，手指粘连，文字水印，低清晰度，噪点，过曝",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s02_start.png",
+      "clip": "clips/s02.mp4",
+      "seed": 102
+    },
+    {
+      "id": "s03",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "medium",
+      "camera": "static",
+      "action": "林晚抬头看楼层显示，表情从疲惫变成疑惑",
+      "dialogue": [
+        {"character": "lin", "text": "十三楼……不是早就封了吗？", "emotion": "疑惑"}
+      ],
+      "image_prompt": "林晚站在电梯中央抬头看向楼层指示灯，眉头微皱，暖黄顶光从上方打下来，金属墙面映出模糊倒影，中景",
+      "video_prompt": "林晚缓慢抬头，眼神从疲惫转为疑惑，嘴唇轻动说话，顶灯轻微闪烁，镜头静止，保持面部稳定",
+      "negative_prompt": "多余手指，脸部崩坏，眼睛不对称，文字水印，低清晰度，噪点，画面撕裂",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s03_start.png",
+      "clip": "clips/s03.mp4",
+      "seed": 103
+    },
+    {
+      "id": "s04",
+      "duration": 4,
+      "location": "elevator",
+      "characters": [],
+      "shot_size": "detail",
+      "camera": "slow push-in",
+      "action": "楼层指示灯从 12 跳到 13，数字闪烁",
+      "dialogue": [],
+      "image_prompt": "特写：老式电梯楼层指示灯，红色数字 13，灯罩有裂纹，周围是拉丝金属面板，画面偏暗",
+      "video_prompt": "数字从 12 跳到 13，红灯闪烁两次，镜头缓慢推近，金属面板反光轻微移动，画面稳定",
+      "negative_prompt": "文字错乱，多余数字，低清晰度，噪点，过曝，镜头畸变",
+      "refs": ["assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s04_start.png",
+      "clip": "clips/s04.mp4",
+      "seed": 104
+    },
+    {
+      "id": "s05",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "medium",
+      "camera": "handheld",
+      "action": "顶灯熄灭又亮起，林晚猛地回头",
+      "dialogue": [
+        {"character": "lin", "text": "谁？", "emotion": "警觉"}
+      ],
+      "image_prompt": "电梯顶灯熄灭的瞬间，林晚猛地回头看向身后，半张脸在应急灯绿光里，空气中有细小灰尘，中景，轻微手持感",
+      "video_prompt": "顶灯闪烁后熄灭半秒，林晚快速回头，头发甩动，应急灯亮起，镜头轻微 handheld 晃动，保持五官稳定",
+      "negative_prompt": "脸部崩坏，双瞳，多余人物，文字水印，低清晰度，噪点，画面撕裂",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s05_start.png",
+      "clip": "clips/s05.mp4",
+      "seed": 105
+    },
+    {
+      "id": "s06",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "close-up",
+      "camera": "static",
+      "action": "金属墙面的倒影里多出一团模糊的人形阴影，林晚没有发现",
+      "dialogue": [],
+      "image_prompt": "特写：林晚侧脸位于画面左侧，右侧是模糊的金属墙面倒影，倒影深处有一团看不清的人形阴影，冷绿色应急灯，浅景深",
+      "video_prompt": "林晚保持侧脸呼吸，发丝轻动，墙面倒影里的阴影缓慢靠近一步，镜头静止，不出现清晰第二个人脸",
+      "negative_prompt": "清晰第二个人，脸部崩坏，双瞳，文字水印，低清晰度，噪点，镜头畸变",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/elevator_master.png"],
+      "keyframe_start": "keyframes/s06_start.png",
+      "clip": "clips/s06.mp4",
+      "seed": 106
+    },
+    {
+      "id": "s07",
+      "duration": 5,
+      "location": "elevator",
+      "characters": ["lin"],
+      "shot_size": "wide",
+      "camera": "static",
+      "action": "电梯门打开，门外是漆黑的十三楼走廊，应急灯亮着",
+      "dialogue": [
+        {"character": "lin", "text": "到站了。", "emotion": "强作镇定"}
+      ],
+      "image_prompt": "电梯门向两侧打开，林晚站在门内，背影占据画面下方三分之一，门外是漆黑的十三楼走廊，尽头有一盏绿色应急灯，广角竖构图",
+      "video_prompt": "电梯门缓慢向两侧打开，门外黑暗逐渐显露，绿色应急灯亮起，林晚肩膀轻微起伏，镜头静止",
+      "negative_prompt": "多余人物，文字水印，低清晰度，噪点，过曝，画面撕裂",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/corridor_master.png"],
+      "keyframe_start": "keyframes/s07_start.png",
+      "clip": "clips/s07.mp4",
+      "seed": 107
+    },
+    {
+      "id": "s08",
+      "duration": 6,
+      "location": "corridor",
+      "characters": ["lin"],
+      "shot_size": "wide",
+      "camera": "pull-out",
+      "action": "林晚走出电梯，电梯门在身后合上，走廊尽头传来一声轻响",
+      "dialogue": [],
+      "image_prompt": "林晚走进十三楼走廊，背影位于画面中央偏下，电梯门在身后正在合上，绿色应急灯照亮薄灰地面，远处防火门半开，广角竖构图",
+      "video_prompt": "林晚向前走两步，电梯门在身后缓缓合上，灯光短暂闪烁，镜头极缓慢拉远，灰尘在光柱里漂浮，画面稳定",
+      "negative_prompt": "多余人物，脸部崩坏，文字水印，低清晰度，噪点，过曝，镜头畸变",
+      "refs": ["assets/characters/lin_sheet.png", "assets/scenes/corridor_master.png"],
+      "keyframe_start": "keyframes/s08_start.png",
+      "clip": "clips/s08.mp4",
+      "seed": 108
+    }
+  ]
+}

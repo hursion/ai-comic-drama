@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+venv-tts/
+.venv/
+
+# Models & weights (too large for git)
+models/
+cache/
+*.safetensors
+*.gguf
+*.ckpt
+*.pth
+*.bin
+
+# ComfyUI (cloned at deploy time)
+ComfyUI/
+
+# Generated outputs
+episodes/*/keyframes/
+episodes/*/clips/
+episodes/*/audio/
+episodes/*/final/
+episodes/*/logs/
+assets/characters/*.png
+assets/scenes/*.png
+assets/voices/*.wav
+
+# Logs & runtime
+logs/
+*.log
+*.pid
+constraints.txt
+requirements.no-torch.txt
+requirements.node.tmp
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Deployment artifacts
+*.zip
