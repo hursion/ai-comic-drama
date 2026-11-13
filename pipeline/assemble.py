@@ -231,7 +231,7 @@ def main() -> int:
 
     concat_txt = norm_dir / "concat.txt"
     concat_txt.write_text(
-        "\n".join(f"file '{p.as_posix()}'" for p in norm_files) + "\n", encoding="utf-8"
+        "\n".join(f"file '{p.resolve().as_posix()}'" for p in norm_files) + "\n", encoding="utf-8"
     )
     concat_mp4 = norm_dir / "concat.mp4"
     print("== concat ==")
@@ -303,22 +303,22 @@ def main() -> int:
             fc = (
                 "[1:a]volume=1.0[voice];[2:a]volume=0.12[bg];"
                 "[voice][bg]amix=inputs=2:duration=first:dropout_transition=2[mixed];"
-                "[mixed]loudnorm=I=-14:TP=-1.5:LRA=11[aout]"
+                "[mixed]loudnorm=I=-14:TP=-1.5:LRA=11,aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[aout]"
             )
             cmd += ["-filter_complex", fc, "-map", "0:v:0", "-map", "[aout]"]
         else:
             print(f"WARN: bgm not found: {bgm}")
             cmd += ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0"]
-            af = "loudnorm=I=-14:TP=-1.5:LRA=11"
+            af = "loudnorm=I=-14:TP=-1.5:LRA=11,aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"
     else:
         cmd += ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0"]
-        af = "loudnorm=I=-14:TP=-1.5:LRA=11"
+        af = "loudnorm=I=-14:TP=-1.5:LRA=11,aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"
     if vf:
         cmd += ["-vf", vf]
     cmd += [
         "-c:v", "libx264", "-preset", "slow" if not args.draft else "veryfast",
         "-crf", str(crf), "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-b:a", "192k",
+        "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
     ]
     if af:
         cmd += ["-af", af]

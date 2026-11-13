@@ -87,6 +87,7 @@ nohup python main.py \
   --use-pytorch-cross-attention \
   "${VRAM_ARGS[@]}" \
   "${EXTRA_ARGS[@]}" \
+  --disable-async-offload \
   --preview-method none \
   --disable-auto-launch \
   --extra-model-paths-config "$WORK/workflows/extra_model_paths.yaml" \

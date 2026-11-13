@@ -201,8 +201,7 @@ def stage_images(client: ComfyClient, episode: dict, episode_dir: Path, workflow
         try:
             names = [client.stage_file(p, prefix=f"{shot['id']}_") for p in ref_paths[:2]]
             ComfyClient.patch(wf, "REF1", "image", names[0])
-            if len(names) > 1:
-                ComfyClient.patch(wf, "REF2", "image", names[1], required=False)
+            ComfyClient.patch(wf, "REF2", "image", names[1] if len(names) > 1 else names[0], required=False)
             prompt = f"全局风格：{config.STYLE_PREFIX}\n\n{shot.get('image_prompt', '')}"
             ComfyClient.set_prompts(wf, prompt, shot.get("negative_prompt") or config.NEGATIVE_PROMPT)
             seed = int(shot.get("seed") or stable_seed(episode["title"], shot["id"], "image"))

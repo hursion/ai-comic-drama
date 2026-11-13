@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-# Best-effort CosyVoice2 install on ROCm. Timebox: 45 minutes.
+# Best-effort CosyVoice2 install on ROCm/CUDA. Timebox: 45 minutes.
 # It uses a separate venv so TTS dependencies cannot break ComfyUI.
 set -uo pipefail
 
 WORK="${WORK:-/mnt/workspace/ai-comic-drama}"
 COSY="${COSY:-$WORK/CosyVoice}"
+MATCHA="${MATCHA:-$WORK/third_party/Matcha-TTS}"
 VENV="${VENV_TTS:-$WORK/venv-tts}"
 PIP_INDEX="${PIP_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple}"
 
 echo "== CosyVoice2 install =="
 echo "repo: $COSY"
+echo "matcha: $MATCHA"
 echo "venv: $VENV"
 
 clone_with_mirror() {
@@ -39,6 +41,13 @@ if [ ! -d "$COSY/.git" ]; then
     exit 1
   }
 fi
+# CosyVoice imports matcha at runtime; it is PYTHONPATH-only (no pip install).
+if [ ! -d "$MATCHA/.git" ]; then
+  mkdir -p "$(dirname "$MATCHA")"
+  clone_with_mirror "https://github.com/shivammehta25/Matcha-TTS.git" "$MATCHA" || {
+    echo "WARN: Matcha-TTS clone failed; CosyVoice2 import will fail without it." >&2
+  }
+fi
 
 BASE_PYTHON="${BASE_PYTHON:-$WORK/venv/bin/python}"
 if [ ! -x "$BASE_PYTHON" ]; then
@@ -57,40 +66,48 @@ if [ -n "$MAIN_SITE" ] && [ "$MAIN_SITE" != "$VENV_SITE" ]; then
   echo "$MAIN_SITE" > "$VENV_SITE/main_venv.pth"
 fi
 
-python -m pip install -U pip setuptools wheel -i "$PIP_INDEX"
+# setuptools<81: pkg_resources (imported by cosyvoice.dataset.processor) was
+# removed in setuptools 81+, so a newer setuptools breaks CosyVoice2 init.
+python -m pip install -U pip "setuptools<81" wheel -i "$PIP_INDEX"
 
-# Keep the image's ROCm torch; never let pip replace it.
+# Keep the image's torch; never let pip replace it.
+# Strip the local version label (+cu130/rocm...): mirrors only carry the bare
+# version, and a pinned +label makes every torch-dependent resolve impossible.
 {
   python - <<'PY'
 import torch
-print("torch==" + torch.__version__)
+print("torch==" + torch.__version__.split("+")[0])
 PY
   python - <<'PY' 2>/dev/null || true
 import torchaudio
-print("torchaudio==" + torchaudio.__version__)
+print("torchaudio==" + torchaudio.__version__.split("+")[0])
 PY
 } > "$WORK/constraints.tts.txt"
 
-# Minimal inference deps. deepspeed/onnxruntime-gpu are training/CUDA extras.
+# Minimal inference deps. deepspeed/gradio/onnxruntime-gpu are training/CUDA extras.
+# numpy<2.5 keeps numba (openai-whisper) importable; lightning+diffusers are
+# imported by cosyvoice.flow at runtime.
 PIP_CONSTRAINT="$WORK/constraints.tts.txt" python -m pip install \
-  conformer hyperpyyaml inflect librosa matplotlib numpy omegaconf \
+  conformer hyperpyyaml inflect librosa matplotlib "numpy<2.5" omegaconf \
   openai-whisper protobuf pyarrow pyworld requests soundfile \
-  tensorboard tensorboardX transformers onnxruntime \
+  tensorboard tensorboardX transformers onnxruntime lightning diffusers \
   -i "$PIP_INDEX" --upgrade-strategy only-if-needed || true
 
-# Text normalization. pynini has no wheel for every Python; this is the usual blocker.
-python -m pip install "pynini==2.1.5" -i "$PIP_INDEX" || {
-  echo "WARN: pynini failed. Try: conda install -c conda-forge pynini==2.1.5"
-  echo "      then re-run this script; without it CosyVoice text frontend may fail."
-}
-python -m pip install WeTextProcessing -i "$PIP_INDEX" --no-deps || true
+# Text normalization is OPTIONAL. CosyVoice's frontend tries ttsfrd, then
+# `from wetext import Normalizer`, and falls back to no normalization when
+# neither imports — TTS still works (fine for clean dialogue). The wetext wheel
+# is on PyPI but not every mirror carries it, and it may need pynini/OpenFst to
+# build, so bound the attempt and never block on it.
+python -m pip install wetext -i "$PIP_INDEX" --no-deps --timeout 30 --retries 1 || \
+  python -m pip install wetext -i https://pypi.org/simple --no-deps --timeout 30 --retries 1 || \
+  echo "NOTE: wetext unavailable; CosyVoice runs without text normalization."
 
-# Import the package from the repo without letting pip touch torch.
-PIP_CONSTRAINT="$WORK/constraints.tts.txt" python -m pip install -e "$COSY" --no-deps || true
-
-COSY="$COSY" python - <<'PY'
+# CosyVoice is not a pip project (no setup.py/pyproject.toml); import it via
+# PYTHONPATH together with Matcha-TTS. Never `pip install -e` the repo.
+COSY="$COSY" MATCHA="$MATCHA" python - <<'PY'
 import os, sys
 sys.path.insert(0, os.environ["COSY"])
+sys.path.insert(0, os.environ["MATCHA"])
 try:
     import torch, torchaudio
     print("torch:", torch.__version__, "hip:", torch.version.hip, "cuda:", torch.cuda.is_available())
@@ -104,6 +121,6 @@ PY
 echo
 echo "next:"
 echo "  source venv-tts/bin/activate"
-echo "  PYTHONPATH=$COSY python -m pipeline.tts_cosyvoice --text '测试' --prompt-text '参考台词' --prompt-wav assets/voices/lin.wav --out episodes/ep01/audio/test.wav"
+echo "  PYTHONPATH=$COSY:$MATCHA python -m pipeline.tts_cosyvoice --text '测试' --prompt-text '参考台词' --prompt-wav assets/voices/lin.wav --out episodes/ep01/audio/test.wav"
 echo "  # or, without a reference voice:"
-echo "  PYTHONPATH=$COSY python -m pipeline.tts_cosyvoice --episode episodes/ep01/episode.json --sft-speaker 中文女"
+echo "  PYTHONPATH=$COSY:$MATCHA python -m pipeline.tts_cosyvoice --episode episodes/ep01/episode.json --sft-speaker 中文女"
